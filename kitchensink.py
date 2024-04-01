@@ -21,10 +21,10 @@ Select an option:
 
 """)
 
-# The Kitchen sink:
 if option == "0":
     url = input("""What URL are we throwing the kitchen sink at?
 """)
+    
     q1 = input("""Would you like to enumerate the URL and see the response codes? Y / N
 """)
     if q1 == "Y" or q1 == "y":

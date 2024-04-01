@@ -3,6 +3,8 @@ from urllib.parse import urljoin
 import os
 import re
 
+##########################################################################################################
+
 # Function to save the page source to a local file
 def save_page_source(url, content):
     # Use the URL path to create a meaningful filename
@@ -17,7 +19,7 @@ def save_page_source(url, content):
         file.write(content)
     print(f"Saved valid page sources to {full_path}")
 
-
+##########################################################################################################
 
 # Function to check a URL and return its status code
 def get_url_status_code(url):
@@ -27,13 +29,13 @@ def get_url_status_code(url):
     except requests.RequestException:
         return None  # Return None if there was an error making the request
 
-
+##########################################################################################################
 
 # Function to sanitize file names derived from URLs
 def sanitize_filename(path):
     return path.strip("/").replace("/", "_") or "root"
 
-
+##########################################################################################################
 
 # Function to save the page source to a local file
 def save_page_source(url, content):
@@ -49,7 +51,7 @@ def save_page_source(url, content):
         file.write(content)
     print(f"> Saved page source to {full_path}")
 
-
+##########################################################################################################
 
 def enumerate_and_save(root_domain, paths_file):
     print("Enumerating and finding valid URLs...")
@@ -81,7 +83,7 @@ def enumerate_and_save(root_domain, paths_file):
         except requests.RequestException as e:
             print(f"Error fetching page source for {valid_url}: {e}")
 
-
+##########################################################################################################
 
 def enumerate_root_domain(root_domain, paths_file):
     # print("Checking for all response codes less than 400...")
@@ -112,6 +114,7 @@ def enumerate_root_domain(root_domain, paths_file):
     
     print(f"\nConsider {root_domain} 3NUM3R4T3D!\n")
 
+##########################################################################################################
 
 def search_for_HTML_comments(url):
     print("\nSearching for HTML comments in the page source...")
@@ -145,6 +148,8 @@ def search_for_HTML_comments(url):
     if not found:
         print("\n> No HTML comments found :(\n")
 
+##########################################################################################################
+
 def search_for_javascript_tags(url):
     print("\nSearching for inline JavaScript <script> tags in the page source...")
     # Define the list of strings you want to search for (start of HTML comments)
@@ -177,6 +182,8 @@ def search_for_javascript_tags(url):
     if not found:
         print("\n> No JavaScript tags found :(\n")
 
+##########################################################################################################
+
 def search_for_frontend_filtering(url):
     print("\nSearching for evidence of front end filtering... <script> tags in the page source...")
     # Define the list of strings you want to search for (start of HTML comments)
@@ -208,3 +215,5 @@ def search_for_frontend_filtering(url):
     # After all lines have been checked, if no string was found, print the message
     if not found:
         print("\n> No evidence of frontend XSS filtering tags found :)\n")
+
+##########################################################################################################
