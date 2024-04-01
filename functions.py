@@ -176,3 +176,35 @@ def search_for_javascript_tags(url):
     # After all lines have been checked, if no string was found, print the message
     if not found:
         print("\n> No JavaScript tags found :(\n")
+
+def search_for_frontend_filtering(url):
+    print("\nSearching for evidence of front end filtering... <script> tags in the page source...")
+    # Define the list of strings you want to search for (start of HTML comments)
+    search_strings = ['dompurify', 'caja', 'sanitize', 'filter']
+
+    # Fetch the content of the URL
+    try:
+        response = requests.get(url)
+        # Ensure the request was successful
+        response.raise_for_status()
+    except requests.RequestException as e:
+        print(f"Request failed: {e}")
+        return
+
+    # Split the content into lines for line-by-line examination
+    content_lines = response.text.splitlines()
+
+    # Iterate over each line in the content
+    found = False  # Flag to track if any string is found
+
+    for line_number, line in enumerate(content_lines, 1):
+        # Check each string in the list
+        for string in search_strings:
+            if string in line:
+                # Print the string, the line number, and the content of the line where the string is found
+                print(f"> '{string}' tag found on line {line_number}: {line.strip()}")
+                found = True  # Set the flag to True if a string is found
+
+    # After all lines have been checked, if no string was found, print the message
+    if not found:
+        print("\n> No frontend XSS filtering tags found :)\n")

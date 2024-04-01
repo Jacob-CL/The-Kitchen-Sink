@@ -17,6 +17,7 @@ Select an option:
     3. Find HTML input tags in page source
     4. Find and print comments in page source
     5. Find inline JavaScript <script> tags
+    6. Look for evidence of XSS filters
 
 """)
 
@@ -44,10 +45,16 @@ if option == "0":
     if q4 == "Y" or q4 == "y":
         functions.search_for_HTML_comments(url)   
     
-    q5 = input ("""Would you like to search for JavaScript <script> tags? Y / N
+    q5 = input ("""Would you like to search for inline JavaScript <script> tags? Y / N
 """)
     if q5 == "Y" or q5 == "y":
-        function.search_for_javascript_tags(url)
+        functions.search_for_javascript_tags(url)
+
+    q6 = input("""Would you like to search for frontend XSS filtering?
+""")
+    if q6 == "Y" or q6 == 'y':
+        functions.search_for_frontend_filtering(url)
+
 
 
 
@@ -83,4 +90,8 @@ What is the URL of the page? Include 'https://www.'
 """)
     functions.search_for_javascript_tags(url)
 
-print('Hello')
+if option == "6":
+    url = input("""
+What is the URL of the page? Include 'https://www.'
+""")
+    functions.search_for_frontend_filtering(url)
