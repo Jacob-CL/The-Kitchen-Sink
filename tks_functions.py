@@ -96,7 +96,7 @@ def search_for_HTML_comments(url):
         for string in search_strings:
             if string in line:
                 # Print the string, the line number, and the content of the line where the string is found
-                print(f"\n✓✓ HTML Comments found on line {line_number}: {line.strip()}\n")
+                print(f"\n✓✓ HTML Comments found on line {line_number}:\n {line.strip()}")
                 found = True  # Set the flag to True if a string is found
 
     # After all lines have been checked, if no string was found, print the message
@@ -130,7 +130,7 @@ def search_for_HTML_inputs(url):
         for string in search_strings:
             if string in line:
                 # Print the string, the line number, and the content of the line where the string is found
-                print(f"\n✓✓ HTML inputs found on line {line_number}: {line.strip()}\n")
+                print(f"\n✓✓ HTML inputs found on line {line_number}:\n {line.strip()}")
                 found = True  # Set the flag to True if a string is found
 
     # After all lines have been checked, if no string was found, print the message
@@ -164,12 +164,12 @@ def search_for_javascript_tags(url):
         for string in search_strings:
             if string in line:
                 # Print the string, the line number, and the content of the line where the string is found
-                print(f"\n✓✓ JavaScript tag found on line {line_number}: {line.strip()}\n")
+                print(f"\n✓✓ JavaScript tag found on line {line_number}:\n {line.strip()}\n")
                 found = True  # Set the flag to True if a string is found
 
     # After all lines have been checked, if no string was found, print the message
     if not found:
-        print("\nXX No JavaScript tags found :(\n")
+        print("\nXX No JavaScript tags found :(")
 
 ##########################################################################################################
 
@@ -198,7 +198,7 @@ def search_for_frontend_filtering(url):
         for string in search_strings:
             if string in line:
                 # Print the string, the line number, and the content of the line where the string is found
-                print(f"\n✓✓ '{string}' mentioned on line {line_number}: {line.strip()}\n")
+                print(f"\n✓✓ '{string}' mentioned on line {line_number}:\n {line.strip()}")
                 found = True  # Set the flag to True if a string is found
 
     # After all lines have been checked, if no string was found, print the message
@@ -232,7 +232,7 @@ def search_for_databases(url):
         for string in search_strings:
             if string in line:
                 # Print the string, the line number, and the content of the line where the string is found
-                print(f"\n✓✓ '{string}' mentioned on line {line_number}: {line.strip()}\n")
+                print(f"\n✓✓ '{string}' mentioned on line {line_number}:\n {line.strip()}s")
                 found = True  # Set the flag to True if a string is found
 
     # After all lines have been checked, if no string was found, print the message
