@@ -17,4 +17,5 @@ help/
 privacy/
 account/
 robots.txt
+index.html
 

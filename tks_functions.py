@@ -176,7 +176,7 @@ def search_for_javascript_tags(url):
 def search_for_frontend_filtering(url):
     print("\n--> Searching for evidence of front end filtering...")
     # Define the list of strings you want to search for (start of HTML comments)
-    search_strings = ['dompurify', 'caja', 'sanitize', 'filter', 'addslashes']
+    search_strings = ['dompurify', 'caja', 'sanitize', 'filter', 'addslashes', 'blacklist', 'black-list', 'black list']
 
     # Fetch the content of the URL
     try:
@@ -203,7 +203,7 @@ def search_for_frontend_filtering(url):
 
     # After all lines have been checked, if no string was found, print the message
     if not found:
-        print("\nXX No evidence of frontend XSS filtering tags found :)\n")
+        print("\nXX No evidence of frontend XSS filtering tags found :)")
 
 ##########################################################################################################
 
