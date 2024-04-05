@@ -17,7 +17,7 @@ Select an option:
     3. Find HTML input tags in page source
     4. Find and print comments in page source
     5. Find inline JavaScript <script> tags
-    6. Look for evidence of XSS filters
+    6. Look for evidence of front-end XSS filters
 
 """)
 

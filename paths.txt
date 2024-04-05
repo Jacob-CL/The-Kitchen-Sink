@@ -16,4 +16,5 @@ terms/
 help/
 privacy/
 account/
+robots.txt
 

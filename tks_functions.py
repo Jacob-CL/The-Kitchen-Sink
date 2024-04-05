@@ -1,3 +1,13 @@
+# Custom function for static analysis
+def static_analysis(url):
+    # Placeholder for your static analysis logic
+    print(f"--> Conducting static analysis..")
+    # HTML input fields
+    # HTML comments
+    # JavaScript tags
+    # Evidence of Frontend filtering 
+    # Evidence of Databases
+
 import requests
 from urllib.parse import urljoin
 import os
@@ -6,19 +16,17 @@ import time
 
 ##########################################################################################################
 
-# Function to save the page source to a local file
-def save_page_source(url, content):
-    # Use the URL path to create a meaningful filename
-    filename = f"{sanitize_filename(url.replace('https://', ''))}.html"
-    
-    # Ensure the directory exists
-    os.makedirs('{url}', exist_ok=True)
-    full_path = os.path.join('{url}', filename)
+def banner():
+    return r"""
+  ________  ________   __ __ __________________  _________   __   _____ _____   ____ __
+ /_  __/ / / / ____/  / //_//  _/_  __/ ____/ / / / ____/ | / /  / ___//  _/ | / / //_/
+  / / / /_/ / __/    / ,<   / /  / / / /   / /_/ / __/ /  |/ /   \__ \ / //  |/ / ,<   
+ / / / __  / /___   / /| |_/ /  / / / /___/ __  / /___/ /|  /   ___/ // // /|  / /| |  
+/_/ /_/ /_/_____/  /_/ |_/___/ /_/  \____/_/ /_/_____/_/ |_/   /____/___/_/ |_/_/ |_|  
+                                                                                       
 
-    # Save the content to the file
-    with open(full_path, 'w', encoding='utf-8') as file:
-        file.write(content)
-    print(f"Saved valid page sources to {full_path}")
+ [+] {0}
+    """.format(time.ctime())
 
 ##########################################################################################################
 
@@ -32,62 +40,8 @@ def get_url_status_code(url):
 
 ##########################################################################################################
 
-# Function to sanitize file names derived from URLs
-def sanitize_filename(path):
-    return path.strip("/").replace("/", "_") or "root"
-
-##########################################################################################################
-
-# Function to save the page source to a local file
-def save_page_source(url, content):
-    # Use the URL path to create a meaningful filename
-    filename = f"{sanitize_filename(url.replace('https://', ''))}.html"
-    
-    # Ensure the directory exists
-    os.makedirs('Valid_URLs_source', exist_ok=True)
-    full_path = os.path.join('Valid_URLs_source', filename)
-
-    # Save the content to the file
-    with open(full_path, 'w', encoding='utf-8') as file:
-        file.write(content)
-    print(f"> Saved page source to {full_path}")
-
-##########################################################################################################
-
-def enumerate_and_save(root_domain, paths_file):
-    print("Enumerating and finding valid URLs...")
-    # Open the file containing the paths
-    with open(paths_file, 'r') as file:
-        paths = file.read().splitlines()
-
-    valid_urls = []
-    # Iterate over the paths from the file and check each one
-    for path in paths:
-        # Construct the full URL
-        url = urljoin(root_domain, path)
-
-        # Get the status code for the URL
-        status_code = get_url_status_code(url)
-
-        # Determine if the URL is valid based on the status code
-        if status_code is not None and status_code < 400:
-            valid_urls.append(url)  # Add the valid URL to the list
-    
-    print("Saving valid URLs locally...")
-    for valid_url in valid_urls:
-        try:
-            response = requests.get(valid_url)
-            if response.status_code < 400:
-                save_page_source(valid_url, response.text)
-            else:
-                print(f"Failed to fetch the page source for {valid_url}")
-        except requests.RequestException as e:
-            print(f"Error fetching page source for {valid_url}: {e}")
-
-##########################################################################################################
-
 def enumerate_root_domain(root_domain, paths_file):
-    # print("Checking for all response codes less than 400...")
+    print("\n--> Enumerating URL by checking for all response codes less than 400...\n")
 
     # Open the file containing the paths
     with open(paths_file, 'r') as file:
@@ -111,14 +65,14 @@ def enumerate_root_domain(root_domain, paths_file):
             if status_code is None:
                 print(f"Error making request to: {url}")
             else:
-                print(f"{status_code} ---- Invalid URL: {url}")
+                print(f"{status_code} ---- XX Invalid URL: {url}")
     
-    print(f"\nConsider {root_domain} 3NUM3R4T3D!\n")
+    print(f"\n✓✓ Enumeration on {root_domain} complete. \n")
 
 ##########################################################################################################
 
 def search_for_HTML_comments(url):
-    print("\nSearching for HTML comments in the page source...")
+    print("\n--> Searching for HTML comments in the page source...")
     # Define the list of strings you want to search for (start of HTML comments)
     search_strings = ['<!--']
 
@@ -142,17 +96,17 @@ def search_for_HTML_comments(url):
         for string in search_strings:
             if string in line:
                 # Print the string, the line number, and the content of the line where the string is found
-                print(f"HTML Comments found on line {line_number}: {line.strip()}")
+                print(f"\n✓✓ HTML Comments found on line {line_number}:\n\n {line.strip()}")
                 found = True  # Set the flag to True if a string is found
 
     # After all lines have been checked, if no string was found, print the message
     if not found:
-        print("\n> No HTML comments found :(\n")
+        print("\nXX No HTML comments found :(")
 
 ##########################################################################################################
 
 def search_for_HTML_inputs(url):
-    print("\nSearching for HTML input in the page source...")
+    print("\n--> Searching for HTML input in the page source...")
     # Define the list of strings you want to search for (start of HTML comments)
     search_strings = ['<input', '<textarea', '<form']
 
@@ -176,17 +130,17 @@ def search_for_HTML_inputs(url):
         for string in search_strings:
             if string in line:
                 # Print the string, the line number, and the content of the line where the string is found
-                print(f"HTML inputs found on line {line_number}: {line.strip()}")
+                print(f"\n✓✓ HTML inputs found on line {line_number}:\n\n {line.strip()}")
                 found = True  # Set the flag to True if a string is found
 
     # After all lines have been checked, if no string was found, print the message
     if not found:
-        print("\nX No HTML inputs found :(\n")
+        print("\nXX No HTML inputs found :(")
 
 ##########################################################################################################
 
 def search_for_javascript_tags(url):
-    print("\nSearching for inline JavaScript <script> tags in the page source...")
+    print("\n--> Searching for inline JavaScript <script> tags in the page source...")
     # Define the list of strings you want to search for (start of HTML comments)
     search_strings = ['<script']
 
@@ -210,17 +164,17 @@ def search_for_javascript_tags(url):
         for string in search_strings:
             if string in line:
                 # Print the string, the line number, and the content of the line where the string is found
-                print(f"> JavaScript tag found on line {line_number}: {line.strip()}")
+                print(f"\n✓✓ JavaScript tag found on line {line_number}:\n\n {line.strip()}")
                 found = True  # Set the flag to True if a string is found
 
     # After all lines have been checked, if no string was found, print the message
     if not found:
-        print("\n> No JavaScript tags found :(\n")
+        print("\nXX No JavaScript tags found :(\n")
 
 ##########################################################################################################
 
 def search_for_frontend_filtering(url):
-    print("\nSearching for evidence of front end filtering... <script> tags in the page source...")
+    print("\n--> Searching for evidence of front end filtering...")
     # Define the list of strings you want to search for (start of HTML comments)
     search_strings = ['dompurify', 'caja', 'sanitize', 'filter', 'addslashes']
 
@@ -244,28 +198,48 @@ def search_for_frontend_filtering(url):
         for string in search_strings:
             if string in line:
                 # Print the string, the line number, and the content of the line where the string is found
-                print(f"> '{string}' tag found on line {line_number}: {line.strip()}")
+                print(f"\n✓✓ '{string}' mentioned on line {line_number}:\n\n {line.strip()}")
                 found = True  # Set the flag to True if a string is found
 
     # After all lines have been checked, if no string was found, print the message
     if not found:
-        print("\n> No evidence of frontend XSS filtering tags found :)\n")
+        print("\nXX No evidence of frontend XSS filtering tags found :)\n")
 
 ##########################################################################################################
 
-# Custom function for static analysis
-def static_analysis(url):
-    # Placeholder for your static analysis logic
-    print(f"Conducting static analysis on: {url}")
+def search_for_databases(url):
+    print("\n--> Searching for evidence of databases...")
+    # Define the list of strings you want to search for (start of HTML comments)
+    search_strings = ['MySQL', 'Mongo', 'MSSQL']
 
-def banner():
-    return r"""
-  ________  ________   __ __ __________________  _________   __   _____ _____   ____ __
- /_  __/ / / / ____/  / //_//  _/_  __/ ____/ / / / ____/ | / /  / ___//  _/ | / / //_/
-  / / / /_/ / __/    / ,<   / /  / / / /   / /_/ / __/ /  |/ /   \__ \ / //  |/ / ,<   
- / / / __  / /___   / /| |_/ /  / / / /___/ __  / /___/ /|  /   ___/ // // /|  / /| |  
-/_/ /_/ /_/_____/  /_/ |_/___/ /_/  \____/_/ /_/_____/_/ |_/   /____/___/_/ |_/_/ |_|  
-                                                                                       
+    # Fetch the content of the URL
+    try:
+        response = requests.get(url)
+        # Ensure the request was successful
+        response.raise_for_status()
+    except requests.RequestException as e:
+        print(f"Request failed: {e}")
+        return
 
- [+] Ready to throw the kitchen sink > {0}
-    """.format(time.ctime())
+    # Split the content into lines for line-by-line examination
+    content_lines = response.text.splitlines()
+
+    # Iterate over each line in the content
+    found = False  # Flag to track if any string is found
+
+    for line_number, line in enumerate(content_lines, 1):
+        # Check each string in the list
+        for string in search_strings:
+            if string in line:
+                # Print the string, the line number, and the content of the line where the string is found
+                print(f"\n✓✓ '{string}' mentioned on line {line_number}:\n\n {line.strip()}")
+                found = True  # Set the flag to True if a string is found
+
+    # After all lines have been checked, if no string was found, print the message
+    if not found:
+        print("\nXX No evidence of databases found :(")
+
+##########################################################################################################
+
+
+##########################################################################################################
