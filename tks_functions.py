@@ -261,7 +261,7 @@ def grep_files(directory, patterns):
                     for line_num, line in enumerate(file, 1):
                         for pattern in patterns:
                             if re.search(pattern, line):
-                                print(f"'{line.strip()}' found in {file_path} on line {line_num}")
+                                print(f"✓✓ '{pattern}' found in {file_path} on line {line_num}")
             except UnicodeDecodeError:
                 # Skipping binary or non-text files
                 continue

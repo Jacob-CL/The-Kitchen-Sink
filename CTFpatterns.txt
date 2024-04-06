@@ -1,5 +1,5 @@
-|safe
-| safe
+\|safe
+\| safe
 blacklist
 black-list
 black list
