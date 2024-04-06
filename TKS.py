@@ -35,7 +35,8 @@ if args.url:
         tks_functions.enumerate_root_domain(args.url, 'paths.txt')
 
 if args.grep:
-    print(f"\n--> CTF Grepping..\n")
+    print(tks_functions.banner())
+    print(f"--> CTF Grepping..\n")
     tks_functions.grep_files(args.grep, tks_functions.load_patterns())
 
 if not any([args.static, args.root, args.grep]):

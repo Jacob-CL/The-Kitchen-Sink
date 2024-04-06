@@ -1,8 +1,14 @@
 \|safe
 \| safe
+blocklist
+block-list
+block list
 blacklist
 black-list
 black list
+allowlist
+allow-list
+allow list
 whitelist
 white-list
 white list
