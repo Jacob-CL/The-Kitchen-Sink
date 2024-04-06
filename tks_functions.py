@@ -241,6 +241,31 @@ def search_for_databases(url):
 
 ##########################################################################################################
 
-#def check_for_input_validation(url):
+def load_patterns(pattern_file='CTFpatterns.txt'):
+    """Load search patterns from the specified file."""
+    try:
+        with open(pattern_file, 'r', encoding='utf-8') as file:
+            patterns = [line.strip() for line in file if line.strip()]
+        return patterns
+    except FileNotFoundError:
+        print(f"Pattern file '{pattern_file}' not found.")
+        exit(1)
+
+def grep_files(directory, patterns):
+    """Recursively search for patterns in files under the given directory."""
+    for root, _, files in os.walk(directory):
+        for file_name in files:
+            file_path = os.path.join(root, file_name)
+            try:
+                with open(file_path, 'r', encoding='utf-8') as file:
+                    for line_num, line in enumerate(file, 1):
+                        for pattern in patterns:
+                            if re.search(pattern, line):
+                                print(f"'{line.strip()}' found in {file_path} on line {line_num}")
+            except UnicodeDecodeError:
+                # Skipping binary or non-text files
+                continue
+            except Exception as e:
+                print(f"Error reading file {file_path}: {e}")
 
 ##########################################################################################################

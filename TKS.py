@@ -1,34 +1,47 @@
 import argparse
 import tks_functions
-import time
-import banner
+import tks_functions
 
-# Set up argparse
-parser = argparse.ArgumentParser(description="--> How to throw a kitchen sink..")
+def perform_static_analysis(url):
+    print(f"\n--> Starting static analysis..")
+    tks_functions.search_for_HTML_inputs(url)
+    tks_functions.search_for_HTML_comments(url)
+    tks_functions.search_for_javascript_tags(url)
+    tks_functions.search_for_frontend_filtering(url)
+    tks_functions.search_for_databases(url)
+    print("\nFinished throwing the kitchen sink ✓✓\n")
 
-# Define command-line arguments
-parser.add_argument("-u", "--url", required=True, help="Define the URL to analyze.")
-parser.add_argument("-s", "--static", action="store_true", help="Will do a static analysis on a URL's page source - scans for HTML comments, HTML inputs, JavaScript tags, and evidence of databases or frontend filtering.")
-parser.add_argument("-r", "--root", action="store_true", help="Will do an root domain analysis - looks for common URL paths and returns response codes")
+def perform_root_domain_analysis(url):
+    print(f"\n--> Starting root domain analysis..")
+    tks_functions.enumerate_root_domain(url, 'paths.txt')
 
-# Parse the command-line arguments
-args = parser.parse_args()
+def perform_grep(directory):
+    print(f"\n--> CTF Grepping..\n")
+    search_patterns = tks_functions.load_patterns()
+    tks_functions.grep_files(directory, search_patterns)
 
-# Check if a URL was provided
-if args.url:
-    print(tks_functions.banner())
-    print(f"--> URL entered: {args.url}")
-    # If the --static flag is used, conduct static analysis on the URL
-    if args.static:
-        print(f"\n--> Starting static analysis..")
-        tks_functions.search_for_HTML_inputs(args.url)
-        tks_functions.search_for_HTML_comments(args.url)
-        tks_functions.search_for_javascript_tags(args.url)
-        tks_functions.search_for_frontend_filtering(args.url)
-        tks_functions.search_for_databases(args.url)
-        print("\nFinished throwing the kitchen sink ✓✓\n")
-    # If the --root flag is used, conduct room domain analysis on the URL
-    if args.root:
-        print(f"\n--> Starting root domain analysis..")
-        tks_functions.enumerate_root_domain(args.url, 'paths.txt')
+def main():
+    parser = argparse.ArgumentParser(description="--> How to throw a kitchen sink..")
+    parser.add_argument("-u", "--url", type=str, metavar="URL", help="Define the URL to analyze.")
+    parser.add_argument("-g", "--grep", type=str, metavar="DIRECTORY", help="Will grep through files and folders looking for CTF vulnerabilities")
+    parser.add_argument("-s", "--static", action="store_true", help="Will do a static analysis on a URL's page source.")
+    parser.add_argument("-r", "--root", action="store_true", help="Will do an root domain analysis.")
 
+    args = parser.parse_args()
+
+    if args.url:
+        print(tks_functions.banner())
+        print(f"--> URL entered: {args.url}")
+        if args.static:
+            perform_static_analysis(args.url)
+        if args.root:
+            perform_root_domain_analysis(args.url)
+
+    if args.grep:
+        perform_grep(args.grep)
+
+    if not any([args.static, args.root, args.grep]):
+        print("No action specified. Try appending an argument like -s, -r, or -g to your command.\n")
+
+if __name__ == "__main__":
+    main()
