@@ -1,0 +1,9 @@
+|safe
+| safe
+blacklist
+black-list
+black list
+whitelist
+white-list
+white list
+

@@ -164,7 +164,7 @@ def search_for_javascript_tags(url):
         for string in search_strings:
             if string in line:
                 # Print the string, the line number, and the content of the line where the string is found
-                print(f"\n✓✓ JavaScript tag found on line {line_number}:\n {line.strip()}\n")
+                print(f"\n✓✓ JavaScript tag found on line {line_number}:\n {line.strip()}")
                 found = True  # Set the flag to True if a string is found
 
     # After all lines have been checked, if no string was found, print the message
@@ -210,7 +210,7 @@ def search_for_frontend_filtering(url):
 def search_for_databases(url):
     print("\n--> Searching for evidence of databases...")
     # Define the list of strings you want to search for (start of HTML comments)
-    search_strings = ['MySQL', 'Mongo', 'MSSQL']
+    search_strings = ['MySQL', 'Mongo', 'MSSQL', 'noSQL']
 
     # Fetch the content of the URL
     try:
@@ -241,5 +241,6 @@ def search_for_databases(url):
 
 ##########################################################################################################
 
+#def check_for_input_validation(url):
 
 ##########################################################################################################
