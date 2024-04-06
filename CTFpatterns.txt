@@ -6,4 +6,7 @@ black list
 whitelist
 white-list
 white list
-
+mongo
+nosql
+mssql
+mysql
