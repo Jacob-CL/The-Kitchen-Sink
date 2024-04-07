@@ -10,7 +10,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementNotInteractableException
 
 ##########################################################################################################
 
@@ -359,9 +359,9 @@ def interact_and_check_response(url):
                 # Look for input of type submit, button of type submit, or an img acting as a button
                 submit_button = form.find_element(By.CSS_SELECTOR, "input[type=submit], button[type=submit], img[role=button], a.book--now, a.signup, a.submit, a.booknow")
                 submit_button.click()
-            except NoSuchElementException:
+
+            except (NoSuchElementException, ElementNotInteractableException):
                 print("No associated submit button or image acting as a button found for input")
-                continue  # Skip this input if no associated submit mechanism is found
 
             time.sleep(2)  # Adjust sleep time as needed
 
@@ -369,7 +369,7 @@ def interact_and_check_response(url):
             try:
                 WebDriverWait(driver, 5).until(EC.alert_is_present())
                 alert = driver.switch_to.alert  # Switch to the alert
-                print(f"✓✓ Alert found after submitting input: '{alert.text}'")
+                print(f"✓✓ Alert found after submitting input: '{alert.text}'\n")
             except TimeoutException:
                 print("XX No alert found after submitting input.")
 
