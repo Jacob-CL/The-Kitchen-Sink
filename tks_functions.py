@@ -1,18 +1,14 @@
-# Custom function for static analysis
-def static_analysis(url):
-    # Placeholder for your static analysis logic
-    print(f"--> Conducting static analysis..")
-    # HTML input fields
-    # HTML comments
-    # JavaScript tags
-    # Evidence of Frontend filtering 
-    # Evidence of Databases
-
 import requests
 from urllib.parse import urljoin
 import os
 import re
 import time
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 ##########################################################################################################
 
@@ -269,3 +265,36 @@ def grep_files(directory, patterns):
                 print(f"Error reading file {file_path}: {e}")
 
 ##########################################################################################################
+
+def count_interactable_inputs(url):
+    options = Options()
+    options.headless = True  # Set to False if you want to see the browser window
+    driver = webdriver.Firefox(options=options)
+    driver.get(url)
+
+    # Scroll to the bottom of the page
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(5)
+
+    # Find all input elements
+    elements = driver.find_elements(By.CSS_SELECTOR, "input, textarea")
+    # Filter elements that are displayed and enabled (interactable)
+    interactable_elements = [e for e in elements if e.is_displayed() and e.is_enabled()]
+
+    if not interactable_elements:
+        print("\nXX No interactable inputs found :(\n")
+    else:
+        print(f"\n✓✓ {len(interactable_elements)} interactable input(s) found.\n")
+
+    #driver.quit()
+
+    # driver.quit()
+
+    # with open('payloads.txt', 'r') as file:
+    #     payloads = file.read().splitlines()
+
+    # for payload in payloads:
+    #     for element in interactable_elements:
+    #         element.send_keys(payload)
+
+    # print(f"Entered payloads into {len(interactable_elements)} interactable inputs in {url}.")

@@ -10,6 +10,7 @@ parser.add_argument("-u", "--url", action="store", type=str, metavar="URL", help
 parser.add_argument("-g", "--grep", action="store", type=str, metavar="DIRECTORY", help="Will grep through files and folders looking for CTF vulnerabilities")
 parser.add_argument("-s", "--static", action="store_true", help="Will do a static analysis on a URL's page source - scans for HTML comments, HTML inputs, JavaScript tags, and evidence of databases or frontend filtering.")
 parser.add_argument("-r", "--root", action="store_true", help="Will do an root domain analysis - looks for common URL paths and returns response codes")
+parser.add_argument("-xss", "--xss", action="store_true", help="Define the URL to test inputs")
 
 # Parse the command-line arguments
 args = parser.parse_args()
@@ -29,6 +30,10 @@ if args.url:
         tks_functions.search_for_databases(args.url)
         print("\nFinished throwing the kitchen sink ✓✓\n")
 
+    if args.xss:
+        print(f"--> Counting number of interactable inputs in URL..")
+        tks_functions.count_interactable_inputs(args.url)
+
     # If the --root flag is used, conduct room domain analysis on the URL
     if args.root:
         print(f"\n--> Starting root domain analysis..")
@@ -39,9 +44,12 @@ if args.grep:
     print(f"--> CTF Grepping..\n")
     tks_functions.grep_files(args.grep, tks_functions.load_patterns())
 
-if not any([args.static, args.root, args.grep]):
-    print("No action specified. Try appending an argument like -s, -r, or -g to your command.\n")
 
 
-    
+
+if not any([args.static, args.root, args.grep, args.xss]):
+    print("No action specified. Try appending an argument like -s, -r, -xss or -g to your command.\n")
+
+
+
 
