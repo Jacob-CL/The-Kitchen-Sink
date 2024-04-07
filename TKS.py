@@ -32,7 +32,7 @@ if args.url:
 
     if args.xss:
         print(f"--> Counting number of interactable inputs in URL..")
-        tks_functions.count_interactable_inputs(args.url)
+        tks_functions.interact_and_check_response(args.url)
 
     # If the --root flag is used, conduct room domain analysis on the URL
     if args.root:

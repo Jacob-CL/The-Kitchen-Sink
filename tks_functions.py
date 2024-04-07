@@ -1,14 +1,16 @@
-import requests
-from urllib.parse import urljoin
 import os
 import re
 import time
+import requests
+from urllib.parse import urljoin
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 ##########################################################################################################
 
@@ -267,14 +269,18 @@ def grep_files(directory, patterns):
 ##########################################################################################################
 
 def count_interactable_inputs(url):
+
+    test_string = r"JL;:!--''\" <SCs>=&{[(`)]}//JL"
+    test_string_pattern = r"JL.{0,26}JL"
+
     options = Options()
     options.headless = True  # Set to False if you want to see the browser window
     driver = webdriver.Firefox(options=options)
     driver.get(url)
 
-    # Scroll to the bottom of the page
+    # Scroll to the bottom of the page - be careful of infinite scroll websites here
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    time.sleep(5)
+    time.sleep(2)
 
     # Find all input elements
     elements = driver.find_elements(By.CSS_SELECTOR, "input, textarea")
@@ -282,19 +288,100 @@ def count_interactable_inputs(url):
     interactable_elements = [e for e in elements if e.is_displayed() and e.is_enabled()]
 
     if not interactable_elements:
-        print("\nXX No interactable inputs found :(\n")
+        print("""\nXX No interactable inputs found :(
+              Note: Prone to false negatives - this script may not have done enough to make the inputs interactable.\n""")
     else:
         print(f"\n✓✓ {len(interactable_elements)} interactable input(s) found.\n")
 
-    #driver.quit()
+        for element in elements:
+            if element.is_displayed() and element.is_enabled():
+                # Clear the input field and enter the test string
+                # element.clear()
+                element.send_keys(test_string)
 
-    # driver.quit()
+                # Attempt to submit the form
+                element.send_keys(Keys.RETURN)
+                
+                # Wait for the page to reload or for a response to be received
+                WebDriverWait(driver, 10).until(
+                    lambda driver: driver.execute_script("return document.readyState;") == "complete"
+                )
+                
+                # Get the page source and search for the test string using regex
+                page_source = driver.page_source
+                if re.search(test_string_pattern, page_source):
+                    print(f"Test string found in the response for input: {element.get_attribute('outerHTML')}")
+                else:
+                    print(f"Test string NOT found in the response for input: {element.get_attribute('outerHTML')}")
+                
+                # Navigate back if needed to test the next input
+                driver.back()
+                WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='text'], textarea"))
+            )
 
-    # with open('payloads.txt', 'r') as file:
-    #     payloads = file.read().splitlines()
+    driver.quit()
 
-    # for payload in payloads:
-    #     for element in interactable_elements:
-    #         element.send_keys(payload)
+##########################################################################################################
 
-    # print(f"Entered payloads into {len(interactable_elements)} interactable inputs in {url}.")
+def interact_and_check_response(url):
+    test_string = "JLJL"
+    test_string_pattern = r"JL.{0,26}JL"
+
+    options = Options()
+    options.headless = True
+    driver = webdriver.Firefox(options=options)
+    driver.get(url)
+
+    # Scroll to the bottom of the page - be careful of infinite scroll websites here
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(2)
+
+    # Find all input and textarea elements
+    elements = driver.find_elements(By.CSS_SELECTOR, "input[type='text'], textarea")
+
+    # Filter elements that are displayed and enabled (interactable)
+    interactable_elements = [e for e in elements if e.is_displayed() and e.is_enabled()]
+
+    if not interactable_elements:
+        print("""\nXX No interactable inputs found :(
+              Note: Prone to false negatives - this script may not have done enough to make the inputs interactable.\n""")
+    else:
+        print(f"\n✓✓ {len(interactable_elements)} interactable input(s) found.\n")
+
+    for element in elements:
+        if element.is_displayed() and element.is_enabled():
+            element.send_keys(test_string)  # Enter the test string
+
+            # Attempt to find and click the associated submit button or image acting as a button
+            try:
+                form = element.find_element(By.XPATH, "./ancestor::form")
+                # Look for input of type submit, button of type submit, or an img acting as a button
+                submit_button = form.find_element(By.CSS_SELECTOR, "input[type=submit], button[type=submit], img[role=button], a.book--now, a.signup, a.submit, a.booknow")
+                submit_button.click()
+            except NoSuchElementException:
+                print("No associated submit button or image acting as a button found for input")
+                continue  # Skip this input if no associated submit mechanism is found
+
+            time.sleep(2)  # Adjust sleep time as needed
+
+            # Check for an alert
+            try:
+                WebDriverWait(driver, 5).until(EC.alert_is_present())
+                alert = driver.switch_to.alert  # Switch to the alert
+                print(f"✓✓ Alert found after submitting input: '{alert.text}'")
+            except TimeoutException:
+                print("XX No alert found after submitting input.")
+
+            if not EC.alert_is_present:
+            # Get the page source and search for the test string using regex
+                page_source = driver.page_source
+                if re.search(test_string_pattern, page_source):
+                    print(f"✓✓ Test string found in the response for input.")
+                else:
+                    print(f"XX Test string NOT found in the response for input.")
+
+                # Navigate back to test the next input
+                driver.back()
+
+    driver.quit()
