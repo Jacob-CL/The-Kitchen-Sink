@@ -69,176 +69,6 @@ def enumerate_root_domain(root_domain, paths_file):
 
 ##########################################################################################################
 
-def search_for_HTML_comments(url):
-    print("\n--> Searching for HTML comments in the page source...")
-    # Define the list of strings you want to search for (start of HTML comments)
-    search_strings = ['<!--']
-
-    # Fetch the content of the URL
-    try:
-        response = requests.get(url)
-        # Ensure the request was successful
-        response.raise_for_status()
-    except requests.RequestException as e:
-        print(f"Request failed: {e}")
-        return
-
-    # Split the content into lines for line-by-line examination
-    content_lines = response.text.splitlines()
-
-    # Iterate over each line in the content
-    found = False  # Flag to track if any string is found
-
-    for line_number, line in enumerate(content_lines, 1):
-        # Check each string in the list
-        for string in search_strings:
-            if string in line:
-                # Print the string, the line number, and the content of the line where the string is found
-                print(f"\n✓✓ HTML Comments found on line {line_number}:\n {line.strip()}")
-                found = True  # Set the flag to True if a string is found
-
-    # After all lines have been checked, if no string was found, print the message
-    if not found:
-        print("\nXX No HTML comments found :(")
-
-##########################################################################################################
-
-def search_for_HTML_inputs(url):
-    print("\n--> Searching for HTML input in the page source...")
-    # Define the list of strings you want to search for (start of HTML comments)
-    search_strings = ['<input', '<textarea', '<form']
-
-    # Fetch the content of the URL
-    try:
-        response = requests.get(url)
-        # Ensure the request was successful
-        response.raise_for_status()
-    except requests.RequestException as e:
-        print(f"Request failed: {e}")
-        return
-
-    # Split the content into lines for line-by-line examination
-    content_lines = response.text.splitlines()
-
-    # Iterate over each line in the content
-    found = False  # Flag to track if any string is found
-
-    for line_number, line in enumerate(content_lines, 1):
-        # Check each string in the list
-        for string in search_strings:
-            if string in line:
-                # Print the string, the line number, and the content of the line where the string is found
-                print(f"\n✓✓ HTML inputs found on line {line_number}:\n {line.strip()}")
-                found = True  # Set the flag to True if a string is found
-
-    # After all lines have been checked, if no string was found, print the message
-    if not found:
-        print("\nXX No HTML inputs found :(")
-
-##########################################################################################################
-
-def search_for_javascript_tags(url):
-    print("\n--> Searching for inline JavaScript <script> tags in the page source...")
-    # Define the list of strings you want to search for (start of HTML comments)
-    search_strings = ['<script']
-
-    # Fetch the content of the URL
-    try:
-        response = requests.get(url)
-        # Ensure the request was successful
-        response.raise_for_status()
-    except requests.RequestException as e:
-        print(f"Request failed: {e}")
-        return
-
-    # Split the content into lines for line-by-line examination
-    content_lines = response.text.splitlines()
-
-    # Iterate over each line in the content
-    found = False  # Flag to track if any string is found
-
-    for line_number, line in enumerate(content_lines, 1):
-        # Check each string in the list
-        for string in search_strings:
-            if string in line:
-                # Print the string, the line number, and the content of the line where the string is found
-                print(f"\n✓✓ JavaScript tag found on line {line_number}:\n {line.strip()}")
-                found = True  # Set the flag to True if a string is found
-
-    # After all lines have been checked, if no string was found, print the message
-    if not found:
-        print("\nXX No JavaScript tags found :(")
-
-##########################################################################################################
-
-def search_for_frontend_filtering(url):
-    print("\n--> Searching for evidence of front end filtering...")
-    # Define the list of strings you want to search for (start of HTML comments)
-    search_strings = ['dompurify', 'caja', 'sanitize', 'filter', 'addslashes', 'blacklist', 'black-list', 'black list']
-
-    # Fetch the content of the URL
-    try:
-        response = requests.get(url)
-        # Ensure the request was successful
-        response.raise_for_status()
-    except requests.RequestException as e:
-        print(f"Request failed: {e}")
-        return
-
-    # Split the content into lines for line-by-line examination
-    content_lines = response.text.splitlines()
-
-    # Iterate over each line in the content
-    found = False  # Flag to track if any string is found
-
-    for line_number, line in enumerate(content_lines, 1):
-        # Check each string in the list
-        for string in search_strings:
-            if string in line:
-                # Print the string, the line number, and the content of the line where the string is found
-                print(f"\n✓✓ '{string}' mentioned on line {line_number}:\n {line.strip()}")
-                found = True  # Set the flag to True if a string is found
-
-    # After all lines have been checked, if no string was found, print the message
-    if not found:
-        print("\nXX No evidence of frontend XSS filtering tags found :)")
-
-##########################################################################################################
-
-def search_for_databases(url):
-    print("\n--> Searching for evidence of databases...")
-    # Define the list of strings you want to search for (start of HTML comments)
-    search_strings = ['MySQL', 'Mongo', 'MSSQL', 'noSQL']
-
-    # Fetch the content of the URL
-    try:
-        response = requests.get(url)
-        # Ensure the request was successful
-        response.raise_for_status()
-    except requests.RequestException as e:
-        print(f"Request failed: {e}")
-        return
-
-    # Split the content into lines for line-by-line examination
-    content_lines = response.text.splitlines()
-
-    # Iterate over each line in the content
-    found = False  # Flag to track if any string is found
-
-    for line_number, line in enumerate(content_lines, 1):
-        # Check each string in the list
-        for string in search_strings:
-            if string in line:
-                # Print the string, the line number, and the content of the line where the string is found
-                print(f"\n✓✓ '{string}' mentioned on line {line_number}:\n {line.strip()}s")
-                found = True  # Set the flag to True if a string is found
-
-    # After all lines have been checked, if no string was found, print the message
-    if not found:
-        print("\nXX No evidence of databases found :(")
-
-##########################################################################################################
-
 def load_patterns(pattern_file='CTFpatterns.txt'):
     """Load search patterns from the specified file."""
     try:
@@ -385,3 +215,51 @@ def interact_and_check_response(url):
                 driver.back()
 
     driver.quit()
+
+##############################################################################################################
+
+def load_search_strings(filename):
+    """Helper function to load search strings from a file."""
+    try:
+        with open(filename, 'r') as file:
+            return [line.strip() for line in file if line.strip()]
+    except FileNotFoundError:
+        print(f"Error: The file '{filename}' was not found.")
+        return []
+
+def static_analysis(url):
+    # Map category names to filenames
+    categories_files = {
+        'Databases': 'databases.txt',
+        'HTML comments': 'html_comments.txt',
+        'HTML meta tags': 'html_meta_tags.txt',
+        'HTML input tags': 'html_input_tags.txt',
+        'JavaScript tags': 'javascript_tags.txt',
+        'Front-end filtering': 'frontend_filtering.txt'
+    }
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Ensure the request was successful
+    except requests.RequestException as e:
+        print(f"Request failed: {e}")
+        return
+
+    content_lines = response.text.splitlines()
+    
+    # Iterate over each category
+    for category, filename in categories_files.items():
+        search_strings = load_search_strings(filename)
+        found = False  # Flag to track if any string is found
+        print("----------------------------------------------------------------------------------")
+        print(f"\n--> Searching for {category}...")
+        
+        for line_number, line in enumerate(content_lines, 1):
+            for string in search_strings:
+                if string in line:
+                    print(f"\n✓✓ '{string}' mentioned on line {line_number}:\n{line.strip()}")
+                    found = True
+        
+        if not found:
+            print(f"\nXX No evidence of {category} found :(")
+
