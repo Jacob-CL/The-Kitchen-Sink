@@ -229,7 +229,6 @@ def load_search_strings(filename):
         return []
 
 def static_analysis(url):
-    print(f"\n--> Starting static source code analysis..")
     # Map category names to filenames
     categories_files = {
         'Databases': 'databases.txt',
@@ -249,26 +248,20 @@ def static_analysis(url):
 
     content_lines = response.text.splitlines()
 
-    with open('InfoGathering.html', 'a') as file:
-        file.write("""
-            <h1><strong>--------------------------------------------------------------------------</strong></h1>
-                """)
-    
     # Iterate over each category
     for category, filename in categories_files.items():
         search_strings = load_search_strings(filename)
         found = False  # Flag to track if any string is found
-            
-        print(f"\n--> Searching for {category}...")
+        
+        print(f"""------------------------------------------------
+              \n--> Searching for {category}...\n""")
         
         for line_number, line in enumerate(content_lines, 1):
             for string in search_strings:
-                if string in line:
-                    with open('InfoGathering.html', 'a', encoding='utf-8') as file:
-                        file.write(f"""<p><br>✓✓ '{string}' mentioned on line {line_number}:<br>{line.strip()}</p>""")
-                        found = True
+                if string in line:                    
+                    print(f"""      ✓✓ '{string}' mentioned on line {line_number}:{line.strip()}\n""")
+                    found = True
         
         if not found:
-            with open('InfoGathering.html', 'a', encoding='utf-8') as file:
-                file.write(f"<p><br>XX No evidence of {category} found :(</p>")
+                print(f"      XX No evidence of {category} found :(\n")
 
