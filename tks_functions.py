@@ -219,6 +219,7 @@ def interact_and_check_response(url):
 ##############################################################################################################
 
 def load_search_strings(filename):
+    
     """Helper function to load search strings from a file."""
     try:
         with open(filename, 'r') as file:
@@ -228,6 +229,7 @@ def load_search_strings(filename):
         return []
 
 def static_analysis(url):
+    print(f"\n--> Starting static source code analysis..")
     # Map category names to filenames
     categories_files = {
         'Databases': 'databases.txt',
@@ -246,20 +248,27 @@ def static_analysis(url):
         return
 
     content_lines = response.text.splitlines()
+
+    with open('InfoGathering.html', 'a') as file:
+        file.write("""
+            <h1><strong>--------------------------------------------------------------------------</strong></h1>
+                """)
     
     # Iterate over each category
     for category, filename in categories_files.items():
         search_strings = load_search_strings(filename)
         found = False  # Flag to track if any string is found
-        print("----------------------------------------------------------------------------------")
+            
         print(f"\n--> Searching for {category}...")
         
         for line_number, line in enumerate(content_lines, 1):
             for string in search_strings:
                 if string in line:
-                    print(f"\n✓✓ '{string}' mentioned on line {line_number}:\n{line.strip()}")
-                    found = True
+                    with open('InfoGathering.html', 'a', encoding='utf-8') as file:
+                        file.write(f"""<p><br>✓✓ '{string}' mentioned on line {line_number}:<br>{line.strip()}</p>""")
+                        found = True
         
         if not found:
-            print(f"\nXX No evidence of {category} found :(")
+            with open('InfoGathering.html', 'a', encoding='utf-8') as file:
+                file.write(f"<p><br>XX No evidence of {category} found :(</p>")
 
