@@ -2,8 +2,8 @@ import os
 import re
 import time
 import requests
-from urllib.parse import urljoin
-
+from urllib.parse import urljoin, urlparse
+import socket
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -11,6 +11,10 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementNotInteractableException
+import socket
+import nmap
+import dns.resolver
+from urllib.parse import urlparse, urljoin
 
 ##########################################################################################################
 
@@ -38,7 +42,7 @@ def get_url_status_code(url):
 
 ##########################################################################################################
 
-def enumerate_root_domain(root_domain, paths_file):
+def directorywalk(root_domain, paths_file):
     print("\n--> Enumerating URL by checking for all response codes less than 400...\n")
 
     # Open the file containing the paths
@@ -65,7 +69,7 @@ def enumerate_root_domain(root_domain, paths_file):
             else:
                 print(f"{status_code} ---- XX Invalid URL: {url}")
     
-    print(f"\n✓✓ Enumeration on {root_domain} complete. \n")
+    print(f"\n✓✓ Directory walk enumeration on {root_domain} complete. \n")
 
 ##########################################################################################################
 
@@ -265,3 +269,119 @@ def static_analysis(url):
         if not found:
                 print(f"      XX No evidence of {category} found :(\n")
 
+def banner_grab(url):
+    # Parse the URL to extract the domain and possible port
+    parsed_url = urlparse(url)
+    domain = parsed_url.netloc.split(':')[0]  # Get the domain without the port
+    port = parsed_url.port if parsed_url.port else 80  # Use port 80 if no port specified
+
+    def send_request(request):
+        try:
+            # Create a socket object
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(10)  # Set timeout for the socket
+            # Connect to the server
+            s.connect((domain, port))
+            # Send the HTTP request to the server
+            s.send(request.encode())
+            # Receive the response from the server
+            response = s.recv(4096)  # Adjust size as necessary
+            s.close()  # Always close the socket
+            # Decode and split the response at the first double newline, which ends the headers
+            headers, _, _ = response.decode().partition('\r\n\r\n')
+            return headers
+        except Exception as e:
+            return f"Failed to connect or retrieve data: {e}"
+        
+
+    # Standard HTTP GET request
+    normal_request = f"GET / HTTP/1.1\r\nHost: {domain}\r\nConnection: close\r\n\r\n"
+    headers = send_request(normal_request)
+    print(f"""
+--> BANNER GRABBING {url}
+================================================================================
+
+> Normal GET request sent:\n{normal_request}
+> Normal GET request response:\n{headers}
+--------------------------------------------------------------------------------""")
+
+
+    # Malformed GET request with non-existent method 'FAKE'
+    malformed_request = f"GET / FAKE/1.1\r\nHost: {domain}\r\nConnection: close\r\n\r\n"
+    headers = send_request(malformed_request)
+    print(f"""
+> Malformed GET request sent with non-existent protocol 'FAKE':\n{malformed_request}
+> Malformed GET request reponse:\n{headers}
+--------------------------------------------------------------------------------""")
+
+
+    # Malformed request with non-existent method 'FAKE'
+    malformed_request = f"FAKE / HTTP/1.1\r\nHost: {domain}\r\nConnection: close\r\n\r\n"
+    headers = send_request(malformed_request)
+    print(f"""
+> Malformed FAKE request sent with non-existent method 'FAKE':\n{malformed_request}
+> Malformed FAKE request response:\n{headers}
+--------------------------------------------------------------------------------""")
+    
+    # Different HTTP versions
+    malformed_request = f"GET / HTTP/1.0\r\nHost: {domain}\r\nConnection: close\r\n\r\n"
+    headers = send_request(malformed_request)
+    print(f"""
+> HTTP version 1.0 request sent:\n{malformed_request}
+> HTTP version 1.0 request response:\n{headers}
+--------------------------------------------------------------------------------""")
+    
+    # Different HTTP versions
+    malformed_request = f"GET / HTTP/2.0\r\nHost: {domain}\r\nConnection: close\r\n\r\n"
+    headers = send_request(malformed_request)
+    print(f"""
+> HTTP version 2.0 request sent:\n{malformed_request}
+> HTTP version 2.0 request response:\n{headers}
+--------------------------------------------------------------------------------""")
+    
+##############################################################################################################
+
+# Get More Detailed DNS Information
+def dns_lookup(url, record_type):
+    try:
+        # Perform the DNS query
+        response = dns.resolver.resolve(url, record_type)
+        
+        # Print details about the DNS response
+        print(f"Query for {url} {record_type} records:")
+        for answer in response:
+            print(f"  - {record_type} record: {answer.to_text()}")
+            print(f"    TTL: {answer.ttl} seconds")
+        
+        # Print additional response information
+        print("\nAdditional response metadata:")
+        print(f"  Query time: {response.response.time * 1000:.2f} ms")
+        print(f"  urlservers used for the query:")
+        for ns in response.urlservers:
+            print(f"    {ns}")
+        
+    except dns.resolver.NoAnswer:
+        print(f"No {record_type} record found for {url}")
+    except dns.resolver.NXDOMAIN:
+        print(f"The domain {url} does not exist")
+    except dns.resolver.Timeout:
+        print("The request timed out")
+    except Exception as e:
+        print(f"Error: {e}")
+
+####################################################################################################
+
+def get_url(url):
+    print("\n--> Trying to get IP address..\n")
+    try:
+        # Extract the hostname from the URL
+        hostname = urlparse(url).hostname
+        # Resolve the hostname to an IP address
+        url = socket.gethostbyname(hostname)
+        print(f"The IP address of {url} is {url}")
+    except socket.error as err:
+        print(f"Error: {err}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+#######################################################################################################
