@@ -385,3 +385,91 @@ def get_url(url):
         print(f"An unexpected error occurred: {e}")
 
 #######################################################################################################
+
+# SCAN COMMON PORTS
+def common_port_scan(url):
+    # Create an Nmap PortScanner object
+    nm = nmap.PortScanner()
+
+    # List of common ports to scan
+    common_ports = [
+        '21',    # FTP
+        '22',    # SSH
+        '23',    # Telnet
+        '25',    # SMTP
+        '53',    # DNS
+        '80',    # HTTP
+        '110',   # POP3
+        '143',   # IMAP
+        '443',   # HTTPS
+        '1433',  # MSSQL
+        '3306',  # MySQL
+        '3389',  # RDP
+        '8080',   # HTTP alternative
+        '40857'
+    ]
+
+    try:
+        print("--> Performing NMAP scan on common ports with verbose output, returning only open ports..\n")
+        # Convert the list of common ports into a comma-separated string for Nmap
+        ports = ','.join(common_ports)
+        # Run the scan with service and version detection
+        nm.scan(url, ports, arguments='-sV -O')  # Including service detection and OS detection
+
+        if nm.all_hosts():  # Check if any hosts were found
+            for host in nm.all_hosts():  # Loop through all hosts
+                print(f'Host : {host}')  # directly using `host` variable
+                print(f'State : {nm[host].state()}')
+
+                # Loop through all scanned protocols and corresponding ports
+                for proto in nm[host].all_protocols():
+                    print('----------')
+                    print(f'Protocol : {proto}')
+
+                    lport = nm[host][proto].keys()
+                    for port in sorted(lport):
+                        port_info = nm[host][proto][port]
+                        # Print detailed information for each port
+                        if port_info["state"] == "open":
+                            print(f'Port : {port}\tState : {port_info["state"]}')
+                            if 'url' in port_info:
+                                print(f'\tService : {port_info["url"]}')
+                            if 'product' in port_info:
+                                print(f'\tProduct : {port_info["product"]}')
+                            if 'version' in port_info:
+                                print(f'\tVersion : {port_info["version"]}')
+                            if 'extrainfo' in port_info:
+                                print(f'\tExtra Info : {port_info["extrainfo"]}')
+                            if 'script' in port_info:
+                                print(f'\tScripts : {port_info["script"]}')
+        else:
+            print("No hosts found. Ensure the IP address or hosturl is correctly specified.")
+    except Exception as e:
+        print(f"Scan error: {e}")
+
+#################################################################################################################
+
+def port_scan_1024(url):
+    nm = nmap.PortScanner()
+    print("\n--> Quick scanning the first 1024 ports..\n")
+    try:
+        # Run a simple Nmap scan
+        nm.scan(url, '1-1024')  # Scans TCP ports 1 through 1024
+        if nm.all_hosts():  # Check if any hosts were found
+            for host in nm.all_hosts():  # Loop through all hosts
+                print('Host : %s (%s)' % (host, nm[host].hostname()))  # Get the host and its hostname
+                print('State : %s' % nm[host].state())  # Get the state of the host (up/down)
+
+                # Loop through all scanned protocols and corresponding ports
+                for proto in nm[host].all_protocols():
+                    print('----------')
+                    print('Protocol : %s' % proto)
+
+                    lport = nm[host][proto].keys()
+                    for port in sorted(lport):
+                        # Print port and state
+                        print('port : %s\tstate : %s' % (port, nm[host][proto][port]['state']))
+        else:
+            print("No hosts found.")
+    except Exception as e:
+        print(f"Scan error: {e}")

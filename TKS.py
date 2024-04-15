@@ -1,6 +1,5 @@
 import argparse
 import tks_functions
-import infog_functions
 
 # Set up argparse
 parser = argparse.ArgumentParser(description="--> How to throw a kitchen sink..")
@@ -12,20 +11,18 @@ parser.add_argument("-s", "--static", action="store_true", help="Will conduct a 
 parser.add_argument("-bg", "--bannergrab", action="store_true", help="Send normal and  malformed requests to URL to trigger something")
 parser.add_argument("-dw", "--directorywalk", action="store_true", help="Will enumerate a domain/URL for extra paths")
 parser.add_argument("-dns", "--dnslookup", action="store_true", help="Will attempt to find IP of URL. Uses record types A, NS, MX")
+parser.add_argument("-ps", "--portscan", action="store_true", help="Port scan common, well known ports")
+parser.add_argument("-1024ps", "--portscan1000", action="store_true", help="Port scans the first 1024 ports")
 parser.add_argument("-g", "--grep", action="store", type=str, metavar="DIRECTORY", help="Will grep through files and folders looking for CTF related keywords")
 
 
 
 parser.add_argument("-x", "--xss", action="store_true", help="Test URL for interactable inputs")
-parser.add_argument("-f", "--fingerprint", action="store_true", help="Determine the version and type of a running web server to enable further discovery of any known vulnerabilities.")
 
 parser.add_argument("-tks","--throw", action="store_true", help="Throw the god dam kitchen sink at a URL")
 
 # Parse the command-line arguments
 args = parser.parse_args()
-
-# Create the HTML file and keep the file handle
-file = infog_functions.make_file()
 
 # Check if a URL was provided
 if args.url:
@@ -56,6 +53,14 @@ if args.url:
         print("< If URL is actually an IP, let's try and find the URL...")
         tks_functions.get_url(args.url)
 
+    if args.portscan:
+        print(f"\n--> Scanning common ports..")
+        tks_functions.common_port_scan(args.url)
+    
+    if args.portscan1000:
+        print(f"\n--> Scanning the first 1024 ports..")
+        tks_functions.port_scan_1024(args.url)
+
     if args.xss:
         print(f"--> Counting number of interactable inputs in URL..")
         tks_functions.interact_and_check_response(args.url)
@@ -83,6 +88,9 @@ if args.url:
         print("< If URL is actually an IP, let's try and find the URL...")
         tks_functions.get_url(args.url)
         ##
+        print(f"\n--> Scanning common ports..")
+        tks_functions.common_port_scan(args.url)
+        ##
         print(f"✓✓ Kitchen sink thrown at {args.url}")
         ##
 
@@ -96,7 +104,8 @@ if args.grep:
     tks_functions.grep_files(args.grep, tks_functions.load_patterns())
 
 
-if not any([args.static, args.directorywalk, args.grep, args.xss, args.fingerprint, args.test, args.throw, args.bannergrab, args.dnslookup, args.ip]):
+if not any([args.static, args.directorywalk, args.grep, args.xss, args.test, args.throw,
+            args.bannergrab,args.dnslookup, args.portscan, args.portscan1000]):
     print("No action specified. Try appending an argument like -s, -r, -xss or -g to your command.\n")
 
 
