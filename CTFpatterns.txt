@@ -16,3 +16,9 @@ mongo
 nosql
 mssql
 mysql
+flag
+fl4g
+HTB{
+picoctf
+h4ck
+ctf

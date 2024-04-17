@@ -23,6 +23,3 @@
 /security.txt
 /.well-known/security.txt
 /.well-known/
-
-
-
