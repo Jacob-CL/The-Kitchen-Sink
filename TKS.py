@@ -12,10 +12,9 @@ parser.add_argument("-bg", "--bannergrab", action="store_true", help="Send norma
 parser.add_argument("-dw", "--directorywalk", action="store_true", help="Will enumerate a domain/URL for extra paths")
 parser.add_argument("-dns", "--dnslookup", action="store_true", help="Will attempt to find IP of URL. Uses record types A, NS, MX")
 parser.add_argument("-ps", "--portscan", action="store_true", help="Port scan common, well known ports")
-parser.add_argument("-1024ps", "--portscan1000", action="store_true", help="Port scans the first 1024 ports")
+parser.add_argument("-ps1024", "--portscan1024", action="store_true", help="Port scans the first 1024 ports")
+parser.add_argument("-ip", "--findip", action="store_true", help="Find IP address of URL")
 parser.add_argument("-g", "--grep", action="store", type=str, metavar="DIRECTORY", help="Will grep through files and folders looking for CTF related keywords")
-
-
 
 parser.add_argument("-x", "--xss", action="store_true", help="Test URL for interactable inputs")
 
@@ -42,8 +41,11 @@ if args.url:
     if args.portscan:
         tks_functions.common_port_scan(args.url)
     
-    if args.portscan1000:
+    if args.portscan1024:
         tks_functions.port_scan_1024(args.url)
+    
+    if args.findip:
+        tks_functions.get_ip(args.url)
 
     if args.xss:
         tks_functions.interact_and_check_response(args.url)
@@ -53,8 +55,8 @@ if args.grep:
     tks_functions.grep_files(args.grep, tks_functions.load_patterns())
 
 
-if not any([args.static, args.directorywalk, args.grep, args.xss, args.test,
-            args.bannergrab,args.dnslookup, args.portscan, args.portscan1000]):
+if not any([args.static, args.directorywalk, args.grep, args.xss, args.test, args.findip,
+            args.bannergrab,args.dnslookup, args.portscan, args.portscan1024]):
     print("No action specified. Try appending an argument like -s, -r, -xss or -g to your command.\n")
 
 

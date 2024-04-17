@@ -382,16 +382,22 @@ def dns_lookup(input):
 ####################################################################################################
 
 def get_ip(url):
-
     print("\n--> Trying to get IP address..\n")
     try:
         # Extract the hostname from the URL
-        hostname = urlparse(url).hostname
+        parsed_url = urlparse(url)
+        hostname = parsed_url.hostname
+        if hostname is None:
+            raise ValueError("URL does not contain a valid hostname - Make sure you have HTTP/HTTPS")
+
         # Resolve the hostname to an IP address
-        global_ip = socket.gethostbyname(hostname)
-        print(f"The IP address of {url} is {global_ip}")
+        ip = socket.gethostbyname(hostname)
+        print(f"The IP address of {url} is {ip}")
+
     except socket.error as err:
-        print(f"Error: {err}")
+        print(f"Error resolving hostname to IP: {err}")
+    except ValueError as ve:
+        print(ve)
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
@@ -456,8 +462,8 @@ def common_port_scan(url):
                                 print(f'\tScripts : {port_info["script"]}')
         else:
             print("No hosts found. Ensure the IP address or hosturl is correctly specified.")
-    except Exception as e:
-        print(f"Scan error: {e}")
+    except Exception as error:
+        print(f"Scan error: {error}")
 
 #################################################################################################################
 
@@ -482,9 +488,10 @@ def port_scan_1024(url):
                         # Print port and state
                         print('port : %s\tstate : %s' % (port, nm[host][proto][port]['state']))
         else:
-            print("No hosts found.")
-    except Exception as e:
-        print(f"Scan error: {e}")
+            print("No hosts found. Make sure you've given it just an IP address - No HTTP or :portnumber")
+    except Exception as error:
+        print(f"""Scan error: {error}
+Make sure you've given it just an IP address - No HTTP or :portnumber""")
 
 ###############################################################################################################
 
