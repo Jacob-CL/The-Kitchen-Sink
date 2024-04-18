@@ -1,0 +1,11 @@
+document.write
+document.writeln
+document.domain
+element.innerHTML
+element.outerHTML
+element.insertAdjacentHTML
+element.onevent
+window.location
+location.hash
+location.search
+attr

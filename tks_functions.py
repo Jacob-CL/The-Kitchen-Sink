@@ -243,7 +243,8 @@ def static_analysis(url):
         'HTML meta tags': 'html_meta_tags.txt',
         'HTML input tags': 'html_input_tags.txt',
         'JavaScript tags': 'javascript_tags.txt',
-        'Front-end filtering': 'frontend_filtering.txt'
+        'Front-end filtering': 'frontend_filtering.txt',
+        'JavaScript Sources': 'sources.txt'
     }
 
     try:
@@ -273,6 +274,8 @@ def static_analysis(url):
                 print(f"      XX No evidence of {category} found :(\n")
     
     print("\nFinished static analysis ✓✓\n")
+
+#######################################################################################################################
 
 def banner_grab(url):
     # Parse the URL to extract the domain and possible port
@@ -395,6 +398,7 @@ def get_ip(url):
         print(f"The IP address of {url} is {ip}")
 
     except socket.error as err:
+
         print(f"Error resolving hostname to IP: {err}")
     except ValueError as ve:
         print(ve)
@@ -495,5 +499,38 @@ Make sure you've given it just an IP address - No HTTP or :portnumber""")
 
 ###############################################################################################################
 
+def search_strings_in_page(source, patterns):
+    found_patterns = []
+    for pattern in patterns:
+        if re.search(pattern, source):
+            found_patterns.append(pattern)
+    return found_patterns
 
-    
+def find_sources(url):
+    print(f"--> Dynamically checking for evidence of Javascript sources in URL: {url}")
+
+    # Read patterns from the file named 'sources.txt'
+    with open('sources.txt', 'r') as file:
+        patterns = [line.strip() for line in file.readlines()]
+
+    options = Options()
+    options.headless = True  # Set to True if you don't want to see the browser window
+    driver = webdriver.Firefox(options=options)
+    driver.get(url)
+
+    # Scroll to the bottom of the page - be careful of infinite scroll websites here
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(2)  # Wait to ensure the page has loaded completely
+
+    # Get the page source after scrolling
+    page_source = driver.page_source
+    # Search the page source for each pattern from 'sources.txt'
+    found_patterns = search_strings_in_page(page_source, patterns)
+    if found_patterns:
+        print(f"Source found: {found_patterns}")
+    else:
+        print("No sources patterns from 'sources.txt' were found.")
+
+    driver.quit()
+
+#########################################################################################################################
