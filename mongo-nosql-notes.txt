@@ -1,0 +1,12 @@
+Since we can control whether the email and password are read from a json object, this means that we are not limited to inserting on strings as input. A typical MongoDB login bypass can be used here with the payload looking like this:
+
+{
+    "email": {
+        "$ne": 0
+    }, 
+    "password": {
+        "$ne": 0
+    } 
+}
+
+A payload like this will force MongoDB to fetch a user where email is not equal to 0 and password is not equal to 0, in our case this would be the first user, and since a valid user is returned we get authenticated and retrieve the flag!

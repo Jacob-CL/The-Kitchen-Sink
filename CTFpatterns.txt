@@ -22,3 +22,9 @@ HTB{
 picoctf
 h4ck
 ctf
+// https://github.com/hackthebox/htboo-ctf-2023/tree/main/htboo-ctf-2023/web/%5BVery%20Easy%5D%20CandyVault
+application/json
+// https://blog.cyberethical.me/hacktheboo-2022-htb-ctf-write-ups
+mako
+// https://github.com/hackthebox/htboo-ctf-2023/tree/main/htboo-ctf-2023/web/%5BVery%20Easy%5D%20Spellbound%20Servants
+pickles.load
